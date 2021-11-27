@@ -1,5 +1,7 @@
 package tokyo.boblennon.nuwe.jump2digital.infrastructure.product;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,7 @@ public class ProductRepositoryImp implements ProductReadRepository, ProductWrite
     }
 
     @Override
-    public Mono<Product> findById(String id) {
+    public Mono<Product> findById(UUID id) {
         return this.productMongoRepository.findById(id);
     }
 
