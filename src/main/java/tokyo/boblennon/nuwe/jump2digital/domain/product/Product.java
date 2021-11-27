@@ -27,6 +27,7 @@ public @Getter @Setter @NoArgsConstructor class Product {
     private Double price;
 
     @NotNull
+    @ProductTypeAnnotation(enumClass = ProductTypeEnum.class)
     private String desc;
     
 }
