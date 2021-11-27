@@ -1,5 +1,6 @@
 package tokyo.boblennon.nuwe.jump2digital;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
@@ -19,7 +20,9 @@ public class RouterFunctionConfig {
     @RouterOperation(beanClass = ProductRepositoryImp.class, beanMethod = "add")
     public RouterFunction<ServerResponse> routes(ProductHandler productHandler) {
         RouterFunction<ServerResponse> routes = route(
-                POST("/product"), productHandler::add);
+                POST("/product"), productHandler::add)
+                    .andRoute(GET("/product/{id}").and(contentType(APPLICATION_JSON))
+                        .or(GET("/product/{id}")), productHandler::findById);
 
         return routes;
     }
