@@ -54,15 +54,12 @@ public class ProductHandler {
 
     public Mono<ServerResponse> findById(ServerRequest request) {
         UUID id = UUID.fromString(request.pathVariable("id"));
-        this.productRepositoryImp.findById(id).map(p -> {
-            System.out.println(p.toString());
-            return p;
-        });
+
         return this.productRepositoryImp.findById(id).flatMap(p -> ServerResponse
                 .ok()
                 .contentType(APPLICATION_JSON)
-                .bodyValue(p)
-                .switchIfEmpty(ServerResponse.notFound().build()));
+                .bodyValue(p))
+                .switchIfEmpty(ServerResponse.notFound().build());
     }
 
     public Mono<ServerResponse> update(ServerRequest request) {
