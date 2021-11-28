@@ -83,13 +83,16 @@ public class TicketHandler {
         // Valor total de los productos vendidos
         
         // Lista de productos agrupados por ProductType
-
+        List<ProductProjection> soldProducts = new ArrayList<>();
+        this.productRepositoryImp.findProductsByProductType()
+                .collectList().subscribe(soldProducts::addAll);
         // Total de tickets PaymentType Visa y Mastercard
         List<TicketProjection> ticketsList = new ArrayList<>();
         this.ticketRepositoryImp.findByPaymentType()
                 .collectList().subscribe(ticketsList::addAll);
         Analytics analytics = new Analytics();
 
+        analytics.setSoldProducts(soldProducts);
         analytics.setTicketsList(ticketsList);
         
         return ServerResponse
