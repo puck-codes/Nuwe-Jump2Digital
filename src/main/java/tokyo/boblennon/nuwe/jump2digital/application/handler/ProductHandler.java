@@ -79,12 +79,12 @@ public class ProductHandler {
                         .body(this.productRepositoryImp.add(p), Product.class))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
-    
+
     public Mono<ServerResponse> delete(ServerRequest request) {
         UUID id = UUID.fromString(request.pathVariable("id"));
 
         return this.productRepositoryImp.findById(id).flatMap(p -> this.productRepositoryImp.delete(p)
-                .then(ServerResponse.noContent().build())
-                .switchIfEmpty(ServerResponse.notFound().build()));
+                .then(ServerResponse.noContent().build()))
+                .switchIfEmpty(ServerResponse.notFound().build());
     }
 }
