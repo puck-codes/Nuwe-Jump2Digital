@@ -37,7 +37,9 @@ public class RouterFunctionConfig {
                                 .andNest(path("/ticket"), route(POST(""), ticketHandler::add)
                                                 .andRoute(GET("/{id}").and(contentType(APPLICATION_JSON))
                                                                 .or(GET("/{id}")), ticketHandler::findById)
-                                                .andRoute(DELETE("/{id}"), ticketHandler::delete));
+                                                .andRoute(DELETE("/{id}"), ticketHandler::delete)
+                                                .andRoute(GET("/analytics"), ticketHandler::analytics)
+                                                .andRoute(GET(""), ticketHandler::getAll));
 
         }
 }
