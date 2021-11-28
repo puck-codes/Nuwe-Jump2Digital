@@ -69,4 +69,11 @@ public class TicketHandler {
                 .then(ServerResponse.noContent().build()))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
+
+    public Mono<ServerResponse> getAll(ServerRequest request) {
+        return ServerResponse
+                .ok()
+                .contentType(APPLICATION_JSON)
+                .body(this.ticketRepositoryImp.getAll(), Ticket.class);
+    }
 }
