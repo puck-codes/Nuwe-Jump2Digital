@@ -21,9 +21,9 @@ public class RouterFunctionConfig {
     public RouterFunction<ServerResponse> routes(ProductHandler productHandler) {
         RouterFunction<ServerResponse> routes = route(
                 POST("/product"), productHandler::add)
-                    .andRoute(GET("/product/{id}").and(contentType(APPLICATION_JSON))
-                        .or(GET("/product/{id}")), productHandler::findById);
-
+                        .andRoute(GET("/product/{id}").and(contentType(APPLICATION_JSON))
+                                .or(GET("/product/{id}")), productHandler::findById)
+                        .andRoute(PUT("/product/{id}"), productHandler::update);
         return routes;
     }
 }
