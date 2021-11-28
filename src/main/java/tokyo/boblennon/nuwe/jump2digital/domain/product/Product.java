@@ -19,15 +19,16 @@ public @Getter @Setter @NoArgsConstructor class Product {
     @Id
     @NotNull
     private UUID id;
-    
+
     @NotEmpty
     private String name;
 
+    @NotNull
     @Positive
     private Double price;
 
     @NotNull
     @ProductTypeAnnotation(enumClass = ProductTypeEnum.class)
     private String desc;
-    
+
 }
