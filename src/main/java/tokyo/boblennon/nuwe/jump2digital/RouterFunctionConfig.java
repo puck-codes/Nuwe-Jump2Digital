@@ -23,7 +23,8 @@ public class RouterFunctionConfig {
                 POST("/product"), productHandler::add)
                         .andRoute(GET("/product/{id}").and(contentType(APPLICATION_JSON))
                                 .or(GET("/product/{id}")), productHandler::findById)
-                        .andRoute(PUT("/product/{id}"), productHandler::update);
+                        .andRoute(PUT("/product/{id}"), productHandler::update)
+                        .andRoute(DELETE("/product/{id}"), productHandler::delete);
         return routes;
     }
 }
