@@ -1,4 +1,5 @@
 package tokyo.boblennon.nuwe.jump2digital.application.handler;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.net.URI;
@@ -29,39 +30,57 @@ public class ProductHandler {
         this.validator = validator;
     }
 
-    public Mono<ServerResponse> add(ServerRequest request){
+    public Mono<ServerResponse> add(ServerRequest request) {
         Mono<Product> product = request.bodyToMono(Product.class);
 
         return product.flatMap(p -> {
             p.setId(UUID.randomUUID());
             Errors errs = new BeanPropertyBindingResult(p, Product.class.getName());
             this.validator.validate(p, errs);
-            if(errs.hasErrors()){
+            if (errs.hasErrors()) {
                 return Flux.fromIterable(errs.getFieldErrors())
-                    .map(err -> "Field " + err.getField() + " " + err.getDefaultMessage())
-                    .collectList()
-                    .flatMap(list -> ServerResponse.badRequest().bodyValue(list));
+                        .map(err -> "Field " + err.getField() + " " + err.getDefaultMessage())
+                        .collectList()
+                        .flatMap(list -> ServerResponse.badRequest().bodyValue(list));
             } else {
                 return this.productRepositoryImp.add(p)
-                    .flatMap(pData -> ServerResponse.created(URI
-                        .create("/product"))
-                        .contentType(APPLICATION_JSON)
-                        .bodyValue(pData));
+                        .flatMap(pData -> ServerResponse.created(URI
+                                .create("/product"))
+                                .contentType(APPLICATION_JSON)
+                                .bodyValue(pData));
             }
         });
     }
 
-    public Mono<ServerResponse> findById(ServerRequest request){
+    public Mono<ServerResponse> findById(ServerRequest request) {
         UUID id = UUID.fromString(request.pathVariable("id"));
         this.productRepositoryImp.findById(id).map(p -> {
             System.out.println(p.toString());
             return p;
         });
         return this.productRepositoryImp.findById(id).flatMap(p -> ServerResponse
-            .ok()
-            .contentType(APPLICATION_JSON)
-            .bodyValue(p)
-            .switchIfEmpty(ServerResponse.notFound().build()));
+                .ok()
+                .contentType(APPLICATION_JSON)
+                .bodyValue(p)
+                .switchIfEmpty(ServerResponse.notFound().build()));
+    }
+
+    public Mono<ServerResponse> update(ServerRequest request) {
+        Mono<Product> product = request.bodyToMono(Product.class);
+        UUID id = UUID.fromString(request.pathVariable("id"));
+
+        Mono<Product> productData = this.productRepositoryImp.findById(id);
+
+        return productData.zipWith(product, (db, req) -> {
+            db.setName(req.getName());
+            db.setPrice(req.getPrice());
+            db.setDesc(req.getDesc());
+            return db;
+        })
+                .flatMap(p -> ServerResponse.created(URI
+                        .create("/product" + p.getId()))
+                        .body(this.productRepositoryImp.add(p), Product.class))
+                .switchIfEmpty(ServerResponse.notFound().build());
     }
 
 }
