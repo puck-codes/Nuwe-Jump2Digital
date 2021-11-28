@@ -9,5 +9,6 @@ public interface TicketReadRepository {
     
     public Flux<Ticket> getAll();
     public Mono<Ticket> findById(UUID id);
+    public Flux<TicketProjection> findByPaymentType();
     
 }

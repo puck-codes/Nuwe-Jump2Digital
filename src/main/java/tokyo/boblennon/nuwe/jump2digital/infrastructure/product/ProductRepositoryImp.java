@@ -5,8 +5,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tokyo.boblennon.nuwe.jump2digital.domain.product.Product;
+import tokyo.boblennon.nuwe.jump2digital.domain.product.ProductProjection;
 import tokyo.boblennon.nuwe.jump2digital.domain.product.ProductReadRepository;
 import tokyo.boblennon.nuwe.jump2digital.domain.product.ProductWriteRepository;
 
@@ -38,6 +40,11 @@ public class ProductRepositoryImp implements ProductReadRepository, ProductWrite
     @Override
     public Mono<Product> findById(UUID id) {
         return this.productMongoRepository.findById(id);
+    }
+
+    @Override
+    public Flux<ProductProjection> findProductsByProductType() {
+        return this.productMongoRepository.findProductsByProductType();
     }
 
 }

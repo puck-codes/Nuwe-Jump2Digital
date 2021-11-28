@@ -29,17 +29,17 @@ public class RouterFunctionConfig {
         @Bean
         public RouterFunction<ServerResponse> routes(ProductHandler productHandler, TicketHandler ticketHandler) {
                 return RouterFunctions
-                                .nest(path("/product"), route(POST(""), productHandler::add)
-                                                .andRoute(GET("/{id}").and(contentType(APPLICATION_JSON))
-                                                                .or(GET("/{id}")), productHandler::findById)
-                                                .andRoute(PUT("/{id}"), productHandler::update)
-                                                .andRoute(DELETE("{id}"), productHandler::delete))
-                                .andNest(path("/ticket"), route(POST(""), ticketHandler::add)
-                                                .andRoute(GET("/{id}").and(contentType(APPLICATION_JSON))
-                                                                .or(GET("/{id}")), ticketHandler::findById)
-                                                .andRoute(DELETE("/{id}"), ticketHandler::delete)
-                                                .andRoute(GET("/analytics"), ticketHandler::analytics)
-                                                .andRoute(GET(""), ticketHandler::getAll));
+                                .nest(path("/product"), route(POST("create"), productHandler::add)
+                                                .andRoute(GET("read/{id}").and(contentType(APPLICATION_JSON))
+                                                                .or(GET("read/{id}")), productHandler::findById)
+                                                .andRoute(PUT("update/{id}"), productHandler::update)
+                                                .andRoute(DELETE("delete/{id}"), productHandler::delete))
 
+                                .andNest(path("/ticket"), route(POST("create"), ticketHandler::add)
+                                                .andRoute(GET("create/{id}").and(contentType(APPLICATION_JSON))
+                                                                .or(GET("read/{id}")), ticketHandler::findById)
+                                                .andRoute(DELETE("delete/{id}"), ticketHandler::delete)
+                                                .andRoute(GET("analytics"), ticketHandler::analytics)
+                                                .andRoute(GET("findall"), ticketHandler::getAll));
         }
 }

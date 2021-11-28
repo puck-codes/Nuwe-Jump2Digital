@@ -8,12 +8,13 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tokyo.boblennon.nuwe.jump2digital.domain.ticket.Ticket;
+import tokyo.boblennon.nuwe.jump2digital.domain.ticket.TicketProjection;
 import tokyo.boblennon.nuwe.jump2digital.domain.ticket.TicketReadRepository;
 import tokyo.boblennon.nuwe.jump2digital.domain.ticket.TicketWriteRepository;
 
 @Service
-public class TicketRepositoryImp implements TicketReadRepository, TicketWriteRepository{
-    
+public class TicketRepositoryImp implements TicketReadRepository, TicketWriteRepository {
+
     private final TicketMongoRepository ticketMongoRepository;
 
     @Autowired
@@ -39,6 +40,11 @@ public class TicketRepositoryImp implements TicketReadRepository, TicketWriteRep
     @Override
     public Mono<Ticket> findById(UUID id) {
         return this.ticketMongoRepository.findById(id);
+    }
+
+    @Override
+    public Flux<TicketProjection> findByPaymentType() {
+        return this.ticketMongoRepository.findByPaymentType();
     }
 
 }
