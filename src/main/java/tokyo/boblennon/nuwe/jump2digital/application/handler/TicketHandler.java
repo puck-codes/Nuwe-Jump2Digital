@@ -3,8 +3,6 @@ package tokyo.boblennon.nuwe.jump2digital.application.handler;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +16,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tokyo.boblennon.nuwe.jump2digital.domain.analytics.Analytics;
-import tokyo.boblennon.nuwe.jump2digital.domain.product.ProductProjection;
 import tokyo.boblennon.nuwe.jump2digital.domain.ticket.Ticket;
-import tokyo.boblennon.nuwe.jump2digital.domain.ticket.TicketProjection;
 import tokyo.boblennon.nuwe.jump2digital.infrastructure.product.ProductRepositoryImp;
 import tokyo.boblennon.nuwe.jump2digital.infrastructure.ticket.TicketRepositoryImp;
 
@@ -38,6 +34,9 @@ public class TicketHandler {
         this.validator = validator;
         this.productRepositoryImp = productRepositoryImp;
     }
+
+    Analytics analytics = new Analytics();
+    Double total = 0.0;
 
     public Mono<ServerResponse> add(ServerRequest request) {
         Mono<Ticket> ticket = request.bodyToMono(Ticket.class);
@@ -80,21 +79,25 @@ public class TicketHandler {
     }
 
     public Mono<ServerResponse> analytics(ServerRequest request) {
+        //! Resetea la variable total pero produce errores por tema de concurrencia
+        total = 0.0;
+        
         // Valor total de los productos vendidos
-        
-        // Lista de productos agrupados por ProductType
-        List<ProductProjection> soldProducts = new ArrayList<>();
-        this.productRepositoryImp.findProductsByProductType()
-                .collectList().subscribe(soldProducts::addAll);
-        // Total de tickets PaymentType Visa y Mastercard
-        List<TicketProjection> ticketsList = new ArrayList<>();
-        this.ticketRepositoryImp.findByPaymentType()
-                .collectList().subscribe(ticketsList::addAll);
-        Analytics analytics = new Analytics();
+        this.ticketRepositoryImp.getAll().flatMap(t -> {
+            return this.productRepositoryImp.findById(t.getProductId()).map(p -> {
+                Double tmp = p.getPrice() * t.getAmount();
+                return tmp;
+            });
+        }).subscribe(tmp -> analytics.setTotalBenefit(total += tmp));
 
-        analytics.setSoldProducts(soldProducts);
-        analytics.setTicketsList(ticketsList);
-        
+        // Lista de productos agrupados por ProductType
+        this.productRepositoryImp.findProductsByProductType()
+                .collectList().subscribe(analytics::setProductsList);
+
+        // Total de tickets PaymentType Visa y Mastercard
+        this.ticketRepositoryImp.findByPaymentType()
+                .collectList().subscribe(analytics::setTicketsList);
+
         return ServerResponse
                 .ok()
                 .contentType(APPLICATION_JSON)

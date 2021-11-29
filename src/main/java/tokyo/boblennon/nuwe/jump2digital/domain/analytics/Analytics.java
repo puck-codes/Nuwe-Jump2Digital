@@ -1,5 +1,6 @@
 package tokyo.boblennon.nuwe.jump2digital.domain.analytics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -10,8 +11,8 @@ import tokyo.boblennon.nuwe.jump2digital.domain.ticket.TicketProjection;
 
 public @Getter @Setter @NoArgsConstructor class Analytics {
 
-    private Integer totalBenefit;
-    private List<ProductProjection> soldProducts;
-    private List<TicketProjection> ticketsList;
+    private Double totalBenefit;
+    private List<ProductProjection> productsList = new ArrayList<>();
+    private List<TicketProjection> ticketsList = new ArrayList<>();
 
 }
